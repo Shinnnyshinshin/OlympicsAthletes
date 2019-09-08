@@ -42,5 +42,34 @@ system.time(
 # user  system elapsed 
 # 44.58    5.64  204.07 
 
+# initializing the results variable
+info_table = vector("list", length(ind_links))
+results_table = vector("list", length(ind_links))
 
-# ind_links
+
+
+
+# Loop through links and extract data 
+system.time( 
+  for (i in 1:length(ind_links)) {
+    html <- try(getURL(ind_links[i], .opts=curlOptions(followlocation=TRUE)), silent=TRUE)
+    if(class(html) == "try-error") {
+      Sys.sleep(5)
+      html <- getURL(ind_links[i], .opts=curlOptions(followlocation=TRUE))
+    }
+    html <- htmlParse(html, asText=TRUE)
+    
+    # save 'infobox'
+    info_table[[i]] <- xpathSApply(html, '//*[@id="info_box"]/p', xmlValue) %>%
+      strsplit('\n') %>% .[[1]]
+    
+    # save 'results table'
+    results_table[[i]] <- readHTMLTable(html) %>% .$results
+    
+    # track progress in console
+    print(i)
+    flush.console() 
+  }
+)
+save(ind_links, info_table, results_table, file="scrapings.Rdata")
+

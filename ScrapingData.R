@@ -73,3 +73,8 @@ system.time(
 )
 save(ind_links, info_table, results_table, file="scrapings.Rdata")
 
+#uris = c("http://www.omegahat.org/index.html", "http://www.omegahat.org/RecentActivities.html")
+
+#uris = c("http://www.omegahat.net/RCurl/index.html",
+#         "http://www.omegahat.net/RCurl/philosophy.xml")
+#txt = getURIAsynchronous(uris)

@@ -2,6 +2,7 @@
 library("RCurl")
 library("XML")
 library("tidyverse")
+library('curl')
 
 # getting the directories
 rawHtml = getURL("https://www.sports-reference.com/olympics/athletes/")
@@ -23,21 +24,29 @@ athlete_directory = paste('https://www.sports-reference.com', links, sep="")
 #[1] 453
 
 # now the next step is to go through the links and then visit the individual athlete pages
+
+
+
+pool = new_pool()
 ind_links = c()
 
+
+for( i in 1:length(athlete_directory)){
+  curl_fetch_multi(athlete_directory[i], function(x){
+      res = rawToChar(x$content)
+      temp = htmlParse(res,asText=TRUE)
+      temp = xpathSApply(temp, '//*[(@id = "page_content")]//a', xmlGetAttr, 'href')
+      temp = paste('http://www.sports-reference.com/', temp, sep="")
+      ind_links <<- c(ind_links, temp)
+    }, pool = pool)
+}
+
+
 system.time(
-  for (i in 1:length(athlete_directory)) {
-    new <- getURL(athlete_directory[i]) %>%
-      htmlParse(asText=TRUE) %>%
-      xpathSApply('//*[(@id = "page_content")]//a', xmlGetAttr, 'href') %>%
-      paste('http://www.sports-reference.com/', ., sep="")
-    # update vector of athlete pages
-    ind_links <- c(ind_links, new) 
-    # track progress in console
-    print(i) 
-    flush.console() # avoid output buffering
-  }
-) 
+  out <- multi_run(pool = pool)
+)
+
+
 
 # user  system elapsed 
 # 44.58    5.64  204.07 

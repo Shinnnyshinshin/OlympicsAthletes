@@ -56,30 +56,40 @@ info_table = vector("list", length(ind_links))
 results_table = vector("list", length(ind_links))
 
 
+pool = new_pool()
 
-
-# Loop through links and extract data 
-system.time( 
-  for (i in 1:length(ind_links)) {
-    html <- try(getURL(ind_links[i], .opts=curlOptions(followlocation=TRUE)), silent=TRUE)
+for( i in 1:1){
+  curl_fetch_multi(ind_links[i], function(x){
+    html <- try(getURL(x, .opts=curlOptions(followlocation=TRUE), .encoding="UTF-8"), silent=TRUE)
     if(class(html) == "try-error") {
       Sys.sleep(5)
-      html <- getURL(ind_links[i], .opts=curlOptions(followlocation=TRUE))
+      html <- getURL(res, .opts=curlOptions(followlocation=TRUE))
     }
-    html <- htmlParse(html, asText=TRUE)
+    #res = rawToChar(x$content)
     
-    # save 'infobox'
-    info_table[[i]] <- xpathSApply(html, '//*[@id="info_box"]/p', xmlValue) %>%
+    html <- htmlParse(html, asText=TRUE, encoding="utf-8")
+    
+    res = xpathSApply(html, '//*[@id="info_box"]/p', xmlValue) %>%
       strsplit('\n') %>% .[[1]]
     
-    # save 'results table'
-    results_table[[i]] <- readHTMLTable(html) %>% .$results
-    
-    # track progress in console
+    assign("info_table[[i]]", res, envir = .GlobalEnv) 
+    print(res)
     print(i)
-    flush.console() 
-  }
+    table_res = readHTMLTable(html) %>% .$results
+    print(table_res)
+    # save 'infobox'
+      # save 'results table'
+    results_table[[i]] <<- readHTMLTable(html) %>% .$results
+  }, pool = pool)
+}
+
+
+system.time(
+  out <- multi_run(pool = pool)
 )
+
+
+
 save(ind_links, info_table, results_table, file="scrapings.Rdata")
 
 #uris = c("http://www.omegahat.org/index.html", "http://www.omegahat.org/RecentActivities.html")

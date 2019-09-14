@@ -27,7 +27,7 @@ athlete_directory = paste('https://www.sports-reference.com', links, sep="")
 
 
 
-pool = new_pool()
+pool = new_pool(total_con = 5)
 ind_links = c()
 
 
@@ -56,29 +56,19 @@ info_table = vector("list", length(ind_links))
 results_table = vector("list", length(ind_links))
 
 
-pool = new_pool()
+pool = new_pool(total_con = 5)
 
-for( i in 1:1){
+for( i in 1:ind_links[i]){
   curl_fetch_multi(ind_links[i], function(x){
     html <- try(getURL(x, .opts=curlOptions(followlocation=TRUE), .encoding="UTF-8"), silent=TRUE)
     if(class(html) == "try-error") {
       Sys.sleep(5)
       html <- getURL(res, .opts=curlOptions(followlocation=TRUE))
     }
-    #res = rawToChar(x$content)
-    
     html <- htmlParse(html, asText=TRUE, encoding="utf-8")
-    
     res = xpathSApply(html, '//*[@id="info_box"]/p', xmlValue) %>%
       strsplit('\n') %>% .[[1]]
-    
-    assign("info_table[[i]]", res, envir = .GlobalEnv) 
-    print(res)
-    print(i)
-    table_res = readHTMLTable(html) %>% .$results
-    print(table_res)
-    # save 'infobox'
-      # save 'results table'
+    info_table[[i]] <<- res
     results_table[[i]] <<- readHTMLTable(html) %>% .$results
   }, pool = pool)
 }
@@ -91,9 +81,3 @@ system.time(
 
 
 save(ind_links, info_table, results_table, file="scrapings.Rdata")
-
-#uris = c("http://www.omegahat.org/index.html", "http://www.omegahat.org/RecentActivities.html")
-
-#uris = c("http://www.omegahat.net/RCurl/index.html",
-#         "http://www.omegahat.net/RCurl/philosophy.xml")
-#txt = getURIAsynchronous(uris)

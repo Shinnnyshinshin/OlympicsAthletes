@@ -49,35 +49,77 @@ system.time(
 
 
 # user  system elapsed 
-# 44.58    5.64  204.07 
+# 44.58    5.64  204.07
+
+# after parallelization
+# user  system elapsed 
+# 18.28    0.53   21.97 
+
+# loop 
+#user  system elapsed 
+#68.11    3.99  316.50
+# multi
+#user  system elapsed 
+#32.68    1.17   36.66
+
+is.not.null <- function(x) !is.null(x)
 
 # initializing the results variable
 info_table = vector("list", length(ind_links))
 results_table = vector("list", length(ind_links))
+global_counter = 1
+pool = new_pool(total_con = 2)
 
-
-pool = new_pool(total_con = 5)
-
-for( i in 1:ind_links[i]){
-  curl_fetch_multi(ind_links[i], function(x){
-    html <- try(getURL(x, .opts=curlOptions(followlocation=TRUE), .encoding="UTF-8"), silent=TRUE)
-    if(class(html) == "try-error") {
-      Sys.sleep(5)
-      html <- getURL(res, .opts=curlOptions(followlocation=TRUE))
-    }
-    html <- htmlParse(html, asText=TRUE, encoding="utf-8")
-    res = xpathSApply(html, '//*[@id="info_box"]/p', xmlValue) %>%
-      strsplit('\n') %>% .[[1]]
-    info_table[[i]] <<- res
-    results_table[[i]] <<- readHTMLTable(html) %>% .$results
-  }, pool = pool)
+done <- function(res){
+  html = rawToChar(res$content)
+  html <- htmlParse(html, asText=TRUE, encoding="utf-8")
+  # parse first
+  initial_table = xpathSApply(html, '//*[@id="info_box"]/p', xmlValue)
+  if (is.not.null(initial_table)){
+    info_table[[global_counter]] <<- strsplit(initial_table, "\n") %>% .[[1]]
+    results_table[[global_counter]] <<- readHTMLTable(html) %>% .$results
+  }
+  print(global_counter)
+  global_counter <<- global_counter + 1
 }
+for (i in 1:length(ind_links)){
+  hello = new_handle(url = ind_links[i])
+  multi_add(hello, pool = pool, done=done)
+}
+system.time(multi_run(pool = pool))
+
+save(ind_links, info_table, results_table, file="multi_scrapings.Rdata")
 
 
-system.time(
-  out <- multi_run(pool = pool)
+
+## this is the old code that runs in a loop
+
+info_table = vector("list", length(ind_links))
+results_table = vector("list", length(ind_links))
+
+is.not.null <- function(x) !is.null(x)
+# Loop through links and extract data 
+system.time( 
+  for (i in 1:length(ind_links)) {
+    # get html (wait a minute and try again if it times out and throws and error)
+    html <- try(getURL(ind_links[i], .opts=curlOptions(followlocation=TRUE), .encoding="UTF-8"), silent=TRUE)
+    if(class(html) == "try-error") {
+      Sys.sleep(60)
+      
+      html <- getURL(ind_links[i], .opts=curlOptions(followlocation=TRUE), .encoding="UTF-8")
+    }    
+    
+    # parse first
+    html <- htmlParse(html, asText=TRUE)
+    initial_table = xpathSApply(html, '//*[@id="info_box"]/p', xmlValue)
+    if (is.not.null(initial_table)){
+      info_table[[i]] = strsplit(initial_table, "\n") %>% .[[1]]
+      results_table[[i]] <- readHTMLTable(html) %>% .$results
+    }
+    # track progress in console
+    print(i)
+    flush.console() 
+  }
 )
+save(ind_links, info_table, results_table, file="multi_scrapings.Rdata")
 
-
-
-save(ind_links, info_table, results_table, file="scrapings.Rdata")

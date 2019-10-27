@@ -1,0 +1,223 @@
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(hashmap)
+install.packages("hashmap")
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(hashmap)
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(hashmap)
+#Empty data frame
+h1b_df = data.frame()
+for(year in seq(2016,2011)) {
+print(paste0("Reading ", year, " records .."))
+raw_data_path = paste0("./data/",year,"_raw_data.xlsx")
+new_df = read_excel(raw_data_path)
+print(paste0("Raw data size: ", as.character(dim(new_df))))
+# Changing column names of data before 2015
+print("Column matching ..")
+if(year != 2015 & year != 2016){
+new_df = new_df %>%
+mutate(CASE_NUMBER = LCA_CASE_NUMBER,
+CASE_STATUS = STATUS,
+EMPLOYER_NAME = LCA_CASE_EMPLOYER_NAME,
+SOC_NAME = LCA_CASE_SOC_NAME,
+SOC_CODE = LCA_CASE_SOC_CODE,
+JOB_TITLE = LCA_CASE_JOB_TITLE,
+FULL_TIME_POSITION = FULL_TIME_POS,
+PREVAILING_WAGE = PW_1,
+PW_UNIT_OF_PAY = PW_UNIT_1,
+WORKSITE_CITY = LCA_CASE_WORKLOC1_CITY,
+WORKSITE_STATE = LCA_CASE_WORKLOC1_STATE)
+}
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(hashmap)
+#Empty data frame
+h1b_df = read.table('h-1b-visa/h1b_kaggle.csv', header=T, as.is=T,sep=",")
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(hashmap)
+#Empty data frame
+h1b_df = read.csv('h-1b-visa/h1b_kaggle.csv', header=T,nrows=1000)
+head(h1b_df)
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(hashmap)
+#Empty data frame
+h1b_df = read.csv('h-1b-visa/h1b_kaggle.csv', header=T,nrows=1000)
+unique(h1b_df$CASE_STATUS)
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(hashmap)
+#Empty data frame
+h1b_df = read.csv('h-1b-visa/h1b_kaggle.csv', header=T,nrows=5000)
+unique(h1b_df$CASE_STATUS)
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(hashmap)
+#Empty data frame
+h1b_df = read.csv('h-1b-visa/h1b_kaggle.csv', header=T,nrows=5000)
+unique(h1b_df$CASE_STATUS)
+setwd("~/GitHub/OlympicsAthletes")
+##########################
+# Load packages
+library("tidyverse")
+# Load data (takes a few seconds)
+load('scrapings.Rdata')
+gender_check <- infobox %>% lapply(function(x) grepl("Gender", x)) %>% lapply(sum)
+# How long is it?
+n_athletes <- length(info_table) # 135584
+# filter only the ones that I was able to scrape
+info_table = info_table[1:50937]
+results_table = results_table[1:50937]
+save(ind_links, info_table, results_table, file="scrapings_filtered.Rdata")
+load('scrapings.Rdata')
+# names
+infobox %>% lapply(function(x) grepl("Full name", x)) %>% unlist %>% sum # 100% complete
+# The first column of the tibble contains the full, unedited name of each athlete
+info <- lapply(infobox, function(x) strsplit(x[[1]], ": ")[[1]][2]) %>% unlist %>% tibble(Name = .)
+info$Name %>% is.null %>% sum # check: no NULL entries
+# genders
+gender_check <- infobox %>% lapply(function(x) grepl("Gender", x)) %>% lapply(sum)
+head()
+gender_check <- infobox %>% lapply(function(x) grepl("Gender", x)) %>% lapply(sum)
+infobox %>% lapply(function(x) grepl("Full name", x)) %>% unlist %>% sum # 100% complete
+load('scrapings.Rdata')
+infobox = info_table
+# names
+infobox %>% lapply(function(x) grepl("Full name", x)) %>% unlist %>% sum # 100% complete
+# The first column of the tibble contains the full, unedited name of each athlete
+info <- lapply(infobox, function(x) strsplit(x[[1]], ": ")[[1]][2]) %>% unlist %>% tibble(Name = .)
+info$Name %>% is.null %>% sum # check: no NULL entries
+infobox %>% lapply(function(x) grepl("Full name", x)) %>% unlist %>% sum # 100% complete
+info <- lapply(infobox, function(x) strsplit(x[[1]], ": ")[[1]][2]) %>% unlist %>% tibble(Name = .)
+info <- lapply(infobox, function(x) strsplit(x[[1]], ":")[[1]][2]) %>% unlist %>% tibble(Name = .)
+x[[1]]
+head(infobox)
+infobox[[1]]
+infobox[[1]][2]
+# The first column of the tibble contains the full, unedited name of each athlete
+info <- lapply(infobox, function(x) strsplit(x[[1]], "name: ")[[1]][1]) %>% unlist %>% tibble(Name = .)
+info$Name %>% is.null %>% sum # check: no NULL entries
+infobox[[1]][1]
+installed.packages("stringi")
+install.packages("stringi")
+install.packages("stringi")
+# Load packages
+library("tidyverse")
+library("stringi")
+test = lapply(infobox, tenenc_toutf8(x))
+library("stringi")
+test = lapply(infobox, tenenc_toutf8(x))
+test = lapply(infobox, stri_enc_toutf8(x))
+test = lapply(infobox, function(x)stri_enc_toutf8(x))
+head(test)
+gender_check <- infobox %>% lapply(function(x) grepl("Gender", x)) %>% lapply(sum)
+head(gender_check)
+gender_check %>% unique # Problem: some infoboxes have 0 or 2 entries for gender
+# genders
+gender_check <- infobox %>% lapply(function(x) grepl("Gender", x)) %>% lapply(sum)
+gender_check %>% unique # Problem: some infoboxes have 0 or 2 entries for gender
+info <- infobox %>%
+lapply(function(x) {
+x <- x[grep("Gender:",x)]
+if (length(x) == 0) sex <- "M" else sex <- grepl("Female",x) %>% ifelse("F","M")
+return(sex)
+}) %>%
+unlist %>% add_column(info, Sex = .)
+# genders
+gender_check <- infobox %>% lapply(function(x) grepl("Gender", x)) %>% lapply(sum)
+gender_check %>% unique # Problem: some infoboxes have 0 or 2 entries for gender
+info <- infobox %>%
+lapply(function(x) {
+x <- x[grep("Gender:",x)]
+if (length(x) == 0) sex <- "M" else sex <- grepl("Female",x) %>% ifelse("F","M")
+return(sex)
+}) %>%
+unlist %>% add_column(info, Sex = .)
+info$Sex[c(30521, 42623, 47015)] <- "F"
+info$Sex <- info$Sex %>% factor # convert to factor
+info$Sex %>% is.null %>% sum # check: no NULL entries
+info$Sex %>% unique # check: only M and F
+info <- infobox %>%
+lapply(function(x) {
+x <- x[grep("Gender:",x)]
+if (length(x) == 0) sex <- "M" else sex <- grepl("Female",x) %>% ifelse("F","M")
+return(sex)
+}) %>%
+unlist %>% add_column(info, Sex = .)
+# genders
+gender_check <- info %>% lapply(function(x) grepl("Gender", x)) %>% lapply(sum)
+gender_check %>% unique # Problem: some infoboxes have 0 or 2 entries for gender
+info <- info %>%
+lapply(function(x) {
+x <- x[grep("Gender:",x)]
+if (length(x) == 0) sex <- "M" else sex <- grepl("Female",x) %>% ifelse("F","M")
+return(sex)
+}) %>%
+unlist %>% add_column(info, Sex = .)
+# The first column of the tibble contains the full, unedited name of each athlete
+info <- lapply(infobox, function(x) strsplit(encoding(x[[1]], "utf-8"), "name: ")[[1]][2]) %>% unlist %>% tibble(Name = .)
+info$Name %>% is.null %>% sum # check: no NULL entries
+# The first column of the tibble contains the full, unedited name of each athlete
+info <- lapply(infobox, function(x) strsplit(x[[1]], ": ")[[1]][2]) %>% unlist %>% tibble(Name = .)
+info$Name %>% is.null %>% sum # check: no NULL entries
+infobox = lapply(infobox, function(x)stri_enc_toutf8(x))
+# The first column of the tibble contains the full, unedited name of each athlete
+info <- lapply(infobox, function(x) strsplit(x[[1]], ": ")[[1]][2]) %>% unlist %>% tibble(Name = .)
+info$Name %>% is.null %>% sum # check: no NULL entries
+library("RCurl")
+library("XML")
+library("tidyverse")
+# getting the directories
+rawHtml = getURL("https://www.sports-reference.com/olympics/athletes/")
+parsedHtml = htmlParse(rawHtml, asText=TRUE)
+# <td align="center" valign="middle"><a href="/olympics/athletes/tq/">Tq</a></td>
+# this is how the links are structured
+links = xpathSApply(parsedHtml, "//td//a", xmlGetAttr, 'href')
+athlete_directory = paste('https://www.sports-reference.com', links, sep="")
+# now the next step is to go through the links and then visit the individual athlete pages
+ind_links = c()
+system.time(
+for (i in 1:length(athlete_directory)) {
+new <- getURL(athlete_directory[i]) %>%
+htmlParse(asText=TRUE) %>%
+xpathSApply('//*[(@id = "page_content")]//a', xmlGetAttr, 'href') %>%
+paste('http://www.sports-reference.com/', ., sep="")
+# update vector of athlete pages
+ind_links <- c(ind_links, new)
+# track progress in console
+print(i)
+flush.console() # avoid output buffering
+}
+)
+install.packages('curl')
+pool <- new_pool()
+cb <- function(req){cat("done:", req$url, ": HTTP:", req$status, "\n")}
+curl_fetch_multi('https://www.google.com', done = cb, pool = pool)
+curl_fetch_multi('https://cloud.r-project.org', done = cb, pool = pool)
+curl_fetch_multi('https://httpbin.org/blabla', done = cb, pool = pool)
+out <- multi_run(pool = pool)
+library(curl)
+pool <- new_pool()
+cb <- function(req){cat("done:", req$url, ": HTTP:", req$status, "\n")}
+curl_fetch_multi('https://www.google.com', done = cb, pool = pool)
+curl_fetch_multi('https://cloud.r-project.org', done = cb, pool = pool)
+curl_fetch_multi('https://httpbin.org/blabla', done = cb, pool = pool)
+out <- multi_run(pool = pool)
+parse_and_add = function(pagehtml){
+temp = htmlParse(pagehtml,asText=True)
+temp = xpathSApply('//*[(@id = "page_content")]//a', xmlGetAttr, 'href')
+temp = paste('http://www.sports-reference.com/', temp, sep="")
+ind_links = c(ind_links,temp)
+}

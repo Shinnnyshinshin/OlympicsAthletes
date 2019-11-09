@@ -8,8 +8,10 @@ library('curl')
 rawHtml = getURL("https://www.sports-reference.com/olympics/athletes/")
 parsedHtml = htmlParse(rawHtml, asText=TRUE)
 
-# <td align="center" valign="middle"><a href="/olympics/athletes/tq/">Tq</a></td>
-# this is how the links are structured
+# how does  //td//a work? 
+# The text in <td> elements are regular and left-aligned by default.
+# <a href="https://www.w3schools.com">Visit W3Schools.com!</a> just the hyper-link 
+
 links = xpathSApply(parsedHtml, "//td//a", xmlGetAttr, 'href')
 
 athlete_directory = paste('https://www.sports-reference.com', links, sep="")
@@ -25,12 +27,11 @@ athlete_directory = paste('https://www.sports-reference.com', links, sep="")
 
 # now the next step is to go through the links and then visit the individual athlete pages
 
-
-
 pool = new_pool(total_con = 5)
 ind_links = c()
 
-
+# curl fetch multi : 
+# CURL : which you can pass it a PTML
 for( i in 1:length(athlete_directory)){
   curl_fetch_multi(athlete_directory[i], function(x){
       res = rawToChar(x$content)
@@ -46,7 +47,7 @@ system.time(
   out <- multi_run(pool = pool)
 )
 
-
+# these are all the individual links
 
 # user  system elapsed 
 # 44.58    5.64  204.07
@@ -55,12 +56,7 @@ system.time(
 # user  system elapsed 
 # 18.28    0.53   21.97 
 
-# loop 
-#user  system elapsed 
-#68.11    3.99  316.50
-# multi
-#user  system elapsed 
-#32.68    1.17   36.66
+ind_links = ind_links[1:4]
 
 is.not.null <- function(x) !is.null(x)
 
@@ -88,38 +84,5 @@ for (i in 1:length(ind_links)){
 }
 system.time(multi_run(pool = pool))
 
-save(ind_links, info_table, results_table, file="multi_scrapings.Rdata")
-
-
-
-## this is the old code that runs in a loop
-
-info_table = vector("list", length(ind_links))
-results_table = vector("list", length(ind_links))
-
-is.not.null <- function(x) !is.null(x)
-# Loop through links and extract data 
-system.time( 
-  for (i in 1:length(ind_links)) {
-    # get html (wait a minute and try again if it times out and throws and error)
-    html <- try(getURL(ind_links[i], .opts=curlOptions(followlocation=TRUE), .encoding="UTF-8"), silent=TRUE)
-    if(class(html) == "try-error") {
-      Sys.sleep(60)
-      
-      html <- getURL(ind_links[i], .opts=curlOptions(followlocation=TRUE), .encoding="UTF-8")
-    }    
-    
-    # parse first
-    html <- htmlParse(html, asText=TRUE)
-    initial_table = xpathSApply(html, '//*[@id="info_box"]/p', xmlValue)
-    if (is.not.null(initial_table)){
-      info_table[[i]] = strsplit(initial_table, "\n") %>% .[[1]]
-      results_table[[i]] <- readHTMLTable(html) %>% .$results
-    }
-    # track progress in console
-    print(i)
-    flush.console() 
-  }
-)
 save(ind_links, info_table, results_table, file="multi_scrapings.Rdata")
 
